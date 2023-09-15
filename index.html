@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            background-color: #0d1821;
+            height: 100%;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .clook {
+            background-color: #e76f51;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            border-radius: 20px;
+            flex-direction: column;
+            user-select: none;
+            padding: 1% 2%;
+            
+            @media only screen and (max-width: 600px) {
+                padding: 3% 5%;
+            }
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f4a261;
+            border-radius: 20px;
+
+            :hover {
+                cursor: pointer;
+            }
+
+            :active {
+                background-color: #e9c46a;
+                border-radius: 20px;
+            }
+        }
+
+        .timer label {
+            font-size: 10em;
+
+            @media only screen and (max-width: 600px) {
+                font-size: 6em;
+            }
+        }
+
+        .pause-or-play:hover,
+        .reset:hover {
+            cursor: pointer;
+        }
+
+        .buttons {
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            font-size: 2em;
+            margin-top: 2%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="clook">
+            <div class="timer">
+                <label></label>
+            </div>
+
+            <div class="buttons">
+                <i class="pause-or-play fa-solid fa-pause"></i>
+                <i class="reset fa-solid fa-rotate-right"></i>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const baseTime = 90;
+    const timerArea = document.querySelector(".timer label");
+    timerArea.innerText = (baseTime < 10 ? "0" + baseTime : baseTime) + ":" + "00";
+    const milsec = baseTime * 60 * 1000;
+    const addingTimePerMove = 30;
+    let timer = null
+    const pauseOrPlayIcon = document.querySelector(".pause-or-play");
+    const timerText = timerArea.innerText;
+    const splitTime = timerText.split(":");
+    let minutes = parseInt(splitTime[0]);
+    let seconds = parseInt(splitTime[1]);
+    const startTimer = () => {
+        timer = setInterval(() => {
+            if (seconds === 0) {
+                minutes--;
+                seconds = 59;
+            } else {
+                seconds--;
+            }
+            timerArea.innerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+        }, 1000)
+        pauseOrPlayIcon.classList.remove("fa-pause");
+        pauseOrPlayIcon.classList.add("fa-play")
+    }
+    document.querySelector(".timer").addEventListener("click", () => {
+        if (timer == null) {
+            startTimer();
+            return;
+        }
+        const timerText = timerArea.innerText;
+        const splitTime = timerText.split(":");
+        minutes = parseInt(splitTime[0]);
+        seconds = parseInt(splitTime[1]);
+        let tempSeconds = seconds + addingTimePerMove;
+        minutes = tempSeconds > 60 ? minutes + 1 : minutes;
+        seconds = tempSeconds % 60;
+        timerArea.innerText = (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds < 10 ? "0" + seconds : seconds);
+    });
+    pauseOrPlayIcon.addEventListener("click", () => {
+        if (timer !== null) {
+            clearTimeout(timer);
+            timer = null;
+            pauseOrPlayIcon.classList.remove("fa-play");
+            pauseOrPlayIcon.classList.add("fa-pause");
+        } else {
+            startTimer();
+        }
+    })
+    document.querySelector(".reset").addEventListener("click", () => {
+        timerArea.innerText = (baseTime < 10 ? "0" + baseTime : baseTime) + ":" + "00";
+        minutes = baseTime;
+        seconds = 0;
+        if (timer !== null) {
+            clearTimeout(timer);
+            timer = null;
+            pauseOrPlayIcon.classList.remove("fa-play");
+            pauseOrPlayIcon.classList.add("fa-pause");
+        }
+    })
+</script>
+
+</html>
